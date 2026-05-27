@@ -251,6 +251,18 @@ def format_history(history):
 def home():
     return {"message": "DocMind API running", "sessions": len(sessions)}
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+
+@app.get("/stats")
+def stats():
+    return {
+        "active_sessions": len(sessions),
+        "model": GROQ_MODEL
+    }
+
 
 @app.post("/session")
 def create_session():
