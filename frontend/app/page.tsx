@@ -19,7 +19,7 @@ export default function Home() {
     setStatus("Creating session...")
 
     try {
-      const sessionRes = await fetch("http://localhost:8000/session", {
+      const sessionRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/session`, {
         method: "POST",
       })
 
@@ -33,7 +33,7 @@ export default function Home() {
         const formData = new FormData()
         formData.append("file", file)
 
-        await fetch(`http://localhost:8000/upload?session_id=${sessionId}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload?session_id=${sessionId}`, {
           method: "POST",
           body: formData,
         })
