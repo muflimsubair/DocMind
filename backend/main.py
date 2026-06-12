@@ -13,7 +13,9 @@ import os
 import uuid
 from sentence_transformers import CrossEncoder
 
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+reranker = CrossEncoder(
+    "cross-encoder/ms-marco-MiniLM-L-2-v2"
+)
 
 # -----------------------------
 # ENV SETUP
