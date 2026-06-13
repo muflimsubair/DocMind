@@ -96,30 +96,22 @@ def save_history(session_id: str, question: str, answer: str):
 # Groq supports OpenAI-compatible embeddings
 # -----------------------------
 async def get_embedding(text: str) -> list[float]:
-    """Get embedding using Groq's embedding endpoint."""
+    """Get embedding using Hugging Face inference API."""
     async with httpx.AsyncClient(timeout=30) as client:
         response = await client.post(
-            "https://api.groq.com/openai/v1/embeddings",
+            "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2",
             headers={
-                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Authorization": f"Bearer {os.environ.get('HF_API_KEY', '')}",
                 "Content-Type": "application/json",
             },
-            json={
-                "model": "llama-3.1-8b-instant",  # Groq embedding model
-                "input": text[:8000],  # Groq embedding input limit
-            }
+            json={"inputs": text[:512], "options": {"wait_for_model": True}}
         )
-
-        if response.status_code != 200:
-            # Fallback: use a simple hash-based pseudo embedding for now
-            # Replace with a real embedding API if Groq embeddings unavailable
-            raise HTTPException(
-                status_code=500,
-                detail=f"Embedding API error: {response.text}"
-            )
-
-        data = response.json()
-        return data["data"][0]["embedding"]
+        result = response.json()
+        import numpy as np
+        embeddings = np.array(result[0])
+        if embeddings.ndim == 2:
+            return list(np.mean(embeddings, axis=0).astype(float))
+        return list(embeddings.astype(float))
 
 async def get_embedding_batch(texts: list[str]) -> list[list[float]]:
     """Get embeddings for multiple texts."""
