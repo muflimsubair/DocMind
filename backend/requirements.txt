@@ -6,3 +6,4 @@ groq
 httpx
 python-multipart
 pydantic
+numpy 
